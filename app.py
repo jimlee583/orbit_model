@@ -103,21 +103,21 @@ with st.sidebar:
         format="%.3f",
         key="eccentricity",
     )
-    st.slider(
+    st.number_input(
         "Inclination (deg)",
         min_value=0.0,
         max_value=180.0,
         step=0.1,
         key="inclination_deg",
     )
-    st.slider(
+    st.number_input(
         "RAAN at epoch (deg)",
         min_value=0.0,
         max_value=360.0,
         step=1.0,
         key="raan_deg",
     )
-    st.slider(
+    st.number_input(
         "Argument of perigee (deg)",
         min_value=0.0,
         max_value=360.0,
