@@ -64,7 +64,7 @@ def _init_state() -> None:
     defaults = {
         "altitude_km": 500.0,
         "eccentricity": 0.0,
-        "inclination_deg": 51.6,
+        "inclination_deg": 0.0,
         "raan_deg": 0.0,
         "argp_deg": 0.0,
         "epoch": date(datetime.now(timezone.utc).year, 1, 1),
