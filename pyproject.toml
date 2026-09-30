@@ -1,0 +1,27 @@
+[project]
+name = "orbit-model"
+version = "0.1.0"
+description = "Interactive satellite orbit visualizer built on Streamlit and Plotly."
+readme = "README.md"
+authors = [
+    { name = "Jim Lee", email = "jimlee583@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4.6",
+    "plotly>=7.1.0",
+    "streamlit>=1.64.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
