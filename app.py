@@ -139,7 +139,7 @@ with st.sidebar:
 
     st.divider()
     st.header("View")
-    st.checkbox("Overlay 12 monthly orbit planes", key="show_yearly")
+    st.checkbox("Overlay equinox and solstice orbit planes", key="show_yearly")
 
     if st.button("Set inclination for Sun-synchronous"):
         try:

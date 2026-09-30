@@ -22,7 +22,9 @@ from orbit_model import (
     sun_declination_deg,
     sun_direction_eci,
 )
+from orbit_model.eclipse import yearly_sweep
 from orbit_model.orbit import perifocal_to_eci_matrix, orbit_normal_eci
+from orbit_model.plots import seasonal_plane_picks
 
 
 # ---------------------------------------------------------------------------
@@ -173,3 +175,23 @@ def test_geo_orbit_has_short_or_zero_eclipse():
     # At beta = 0 the eclipse fraction is asin(R/a)/pi ~ 4.6 deg -> ~72 min.
     ecl_s = eclipse_fraction_circular(a, 0.0) * orbital_period_s(a)
     assert 60.0 * 60.0 < ecl_s < 75.0 * 60.0
+
+
+def test_seasonal_planes_are_the_equinoxes_and_solstices():
+    els = OrbitElements.from_user_inputs(500.0, 0.0, 51.6, 0.0)
+    sweep = yearly_sweep(els, date(2025, 1, 1), num_days=366)
+    picks = seasonal_plane_picks(sweep)
+    labels = [label for _k, label, _color in picks]
+    assert labels == [
+        "March equinox",
+        "June solstice",
+        "September equinox",
+        "December solstice",
+    ]
+    dates = [sweep.dates[k] for k, _label, _color in picks]
+    assert dates == [
+        date(2025, 3, 20),
+        date(2025, 6, 21),
+        date(2025, 9, 22),
+        date(2025, 12, 21),
+    ]

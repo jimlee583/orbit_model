@@ -7,7 +7,7 @@ import math
 import numpy as np
 import plotly.graph_objects as go
 
-from orbit_model.constants import R_EARTH
+from orbit_model.constants import OBLIQUITY_J2000_RAD, R_EARTH
 from orbit_model.eclipse import YearlySweep
 from orbit_model.orbit import (
     OrbitElements,
@@ -94,6 +94,45 @@ def _axis_trace(name: str, direction: np.ndarray, length: float, color: str) -> 
     )
 
 
+# Sun ecliptic longitudes of the equinoxes and solstices, with legend colors.
+_SEASONS: tuple[tuple[float, str, str], ...] = (
+    (0.0, "March equinox", "#7CFFB2"),
+    (math.pi / 2.0, "June solstice", "#FFD54A"),
+    (math.pi, "September equinox", "#FF8A4C"),
+    (3.0 * math.pi / 2.0, "December solstice", "#7EB6FF"),
+)
+
+
+def _sun_ecliptic_longitude(sun_hat: np.ndarray) -> np.ndarray:
+    """Ecliptic longitude (rad) of ECI Sun unit vectors, shape ``(N, 3)``."""
+
+    eps = OBLIQUITY_J2000_RAD
+    y_ecl = math.cos(eps) * sun_hat[:, 1] + math.sin(eps) * sun_hat[:, 2]
+    return np.arctan2(y_ecl, sun_hat[:, 0])
+
+
+def seasonal_plane_picks(
+    yearly: YearlySweep,
+    max_offset_rad: float = math.radians(2.0),
+) -> list[tuple[int, str, str]]:
+    """Days in ``yearly`` nearest the equinoxes and solstices.
+
+    Each item is ``(index, label, color)``, ordered by date. A season is
+    left out when the sweep never comes within ``max_offset_rad`` of that
+    Sun ecliptic longitude.
+    """
+
+    lam = _sun_ecliptic_longitude(yearly.sun_hat)
+    picks: list[tuple[int, str, str]] = []
+    for target, label, color in _SEASONS:
+        delta = np.abs((lam - target + math.pi) % (2.0 * math.pi) - math.pi)
+        k = int(np.argmin(delta))
+        if float(delta[k]) <= max_offset_rad:
+            picks.append((k, label, color))
+    picks.sort(key=lambda item: item[0])
+    return picks
+
+
 # ---------------------------------------------------------------------------
 # 3D scene
 # ---------------------------------------------------------------------------
@@ -132,38 +171,33 @@ def build_scene_figure(
         )
     )
 
-    # Yearly plane overlay.
+    # Equinox and solstice orbit planes.
     if show_yearly_planes and yearly is not None:
-        # Pick ~12 evenly spaced samples across the year.
-        n = len(yearly.days)
-        if n > 1:
-            picks = np.linspace(0, n - 1, num=min(12, n), dtype=int)
-            colors = _colormap(np.linspace(0.0, 1.0, picks.size))
-            for j, k in enumerate(picks):
-                day_elements = OrbitElements(
-                    a=elements.a,
-                    e=elements.e,
-                    i=elements.i,
-                    raan=float(yearly.raan_rad[k]),
-                    argp=float(yearly.argp_rad[k]),
+        for j, (k, label, color) in enumerate(seasonal_plane_picks(yearly)):
+            day_elements = OrbitElements(
+                a=elements.a,
+                e=elements.e,
+                i=elements.i,
+                raan=float(yearly.raan_rad[k]),
+                argp=float(yearly.argp_rad[k]),
+            )
+            pts = sample_orbit_eci(day_elements, num_points=181)
+            fig.add_trace(
+                go.Scatter3d(
+                    x=pts[:, 0],
+                    y=pts[:, 1],
+                    z=pts[:, 2],
+                    mode="lines",
+                    line=dict(color=color, width=2),
+                    opacity=0.7,
+                    name=f"{label} ({yearly.dates[k].strftime('%b %d')})",
+                    showlegend=True,
+                    legendgroup="yearly",
+                    legendgrouptitle=dict(text="Equinox & solstice")
+                    if j == 0
+                    else None,
                 )
-                pts = sample_orbit_eci(day_elements, num_points=181)
-                fig.add_trace(
-                    go.Scatter3d(
-                        x=pts[:, 0],
-                        y=pts[:, 1],
-                        z=pts[:, 2],
-                        mode="lines",
-                        line=dict(color=colors[j], width=2),
-                        opacity=0.55,
-                        name=yearly.dates[k].strftime("%b %d"),
-                        showlegend=True,
-                        legendgroup="yearly",
-                        legendgrouptitle=dict(text="Yearly planes")
-                        if j == 0
-                        else None,
-                    )
-                )
+            )
 
     # Sun direction arrow.
     sun_len = 2.2 * R_EARTH
@@ -230,14 +264,6 @@ def build_scene_figure(
         uirevision="scene",
     )
     return fig
-
-
-def _colormap(t: np.ndarray) -> list[str]:
-    """Map values in [0, 1] to plotly ``Viridis`` colors."""
-
-    from plotly.colors import sample_colorscale
-
-    return sample_colorscale("Viridis", list(t))
 
 
 # ---------------------------------------------------------------------------

@@ -5,8 +5,9 @@ using **numpy**-only orbit mechanics. Enter a set of orbit parameters (altitude,
 inclination, eccentricity, RAAN, argument of perigee) and the app shows:
 
 - A 3D scene in the Earth-Centered Inertial (ECI) frame with Earth, the orbit
-  track, the satellite, the Sun direction, and (optionally) 12 monthly orbit
-  planes so you can see the J2 nodal-precession sweep the plane over a year.
+  track, the satellite, the Sun direction, and (optionally) the orbit planes
+  at the two equinoxes and two solstices, so you can see how J2 nodal
+  precession moves the plane between those seasons.
 - Orbital period and apogee/perigee altitudes.
 - RAAN and argument-of-perigee drift rates from J2.
 - Beta angle vs day of year and eclipse duration vs day of year, with the
