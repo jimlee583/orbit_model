@@ -328,14 +328,59 @@ st.plotly_chart(build_raan_figure(sweep), width="stretch")
 
 with st.expander("How the numbers are computed"):
     st.markdown(
-        """
-- **Semi-major axis**: `a = (R_earth + h_p) / (1 - e)` where `h_p` is the perigee altitude.
-- **Period**: `T = 2*pi*sqrt(a^3 / mu)`.
-- **J2 secular RAAN rate**: `dOmega/dt = -1.5 * n * J2 * (R_e / p)^2 * cos(i)` with `p = a(1 - e^2)`.
-- **J2 secular argp rate**: `domega/dt = 0.75 * n * J2 * (R_e / p)^2 * (5 cos^2 i - 1)`.
-- **Sun direction**: Astronomical Almanac low-precision formula (accurate to about 0.01 deg for 1950-2050).
-- **Beta angle**: `beta = asin(h_hat . s_hat)`.
-- **Eclipse**: cylindrical Earth shadow. Circular orbits use the closed form `f = acos(sqrt(a^2 - R_e^2) / (a cos beta)) / pi`; eccentric orbits are propagated numerically with Kepler's equation.
-- **Sun-synchronous condition**: `dOmega/dt = 360 deg / sidereal_year` (about 0.9856 deg/day).
+        r"""
+**Semi-major axis**
+
+$$
+a = \frac{R_e + h_p}{1 - e}
+$$
+
+where $h_p$ is the perigee altitude.
+
+**Period**
+
+$$
+T = 2\pi\sqrt{\frac{a^3}{\mu}}
+$$
+
+**J2 secular RAAN rate**
+
+$$
+\frac{d\Omega}{dt} = -\frac{3}{2}\, n\, J_2 \left(\frac{R_e}{p}\right)^2 \cos i
+$$
+
+with $p = a(1 - e^2)$.
+
+**J2 secular argument of perigee rate**
+
+$$
+\frac{d\omega}{dt} = \frac{3}{4}\, n\, J_2 \left(\frac{R_e}{p}\right)^2 \left(5\cos^2 i - 1\right)
+$$
+
+**Sun direction**
+
+Astronomical Almanac low-precision formula, accurate to about $0.01^\circ$ for 1950–2050.
+
+**Beta angle**
+
+$$
+\beta = \arcsin(\hat{h} \cdot \hat{s})
+$$
+
+**Eclipse**
+
+Cylindrical Earth shadow. Circular orbits use
+
+$$
+f = \frac{1}{\pi}\arccos\left(\frac{\sqrt{a^2 - R_e^2}}{a\cos\beta}\right)
+$$
+
+Eccentric orbits are propagated numerically with Kepler's equation.
+
+**Sun-synchronous condition**
+
+$$
+\frac{d\Omega}{dt} = \frac{360^\circ}{\text{sidereal year}} \approx 0.9856^\circ/\text{day}
+$$
         """
     )
