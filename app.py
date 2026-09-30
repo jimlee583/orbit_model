@@ -329,13 +329,34 @@ st.plotly_chart(build_raan_figure(sweep), width="stretch")
 with st.expander("How the numbers are computed"):
     st.markdown(
         r"""
+**Constants**
+
+- $R_e = 6378.137\,\mathrm{km}$: Earth equatorial radius (WGS-84).
+- $\mu = 398\,600.4418\,\mathrm{km}^3/\mathrm{s}^2$: Earth gravitational parameter (EGM-96).
+- $J_2 = 1.08262668 \times 10^{-3}$: Earth's second zonal harmonic, dimensionless. It measures the equatorial bulge of the gravity field.
+- One sidereal year $= 365.256363004$ mean solar days.
+
+**Symbols**
+
+- $h_p$: perigee altitude above $R_e$, km. This is the altitude you enter.
+- $e$: eccentricity.
+- $i$: inclination.
+- $\Omega$: right ascension of the ascending node (RAAN).
+- $\omega$: argument of perigee.
+- $a$: semi-major axis, km.
+- $p = a(1 - e^2)$: semi-latus rectum, km.
+- $n = \sqrt{\mu / a^3}$: mean motion, rad/s.
+- $T$: orbital period, seconds. The metric above shows minutes.
+- $\beta$: beta angle, the Sun's elevation above the orbit plane.
+- $\hat{h}$: unit vector normal to the orbit plane, in ECI.
+- $\hat{s}$: unit vector from the center of Earth to the Sun, in ECI.
+- $f$: fraction of one orbit spent in Earth's shadow. Eclipse duration is $fT$, shown above in minutes.
+
 **Semi-major axis**
 
 $$
 a = \frac{R_e + h_p}{1 - e}
 $$
-
-where $h_p$ is the perigee altitude.
 
 **Period**
 
@@ -349,7 +370,7 @@ $$
 \frac{d\Omega}{dt} = -\frac{3}{2}\, n\, J_2 \left(\frac{R_e}{p}\right)^2 \cos i
 $$
 
-with $p = a(1 - e^2)$.
+The rate is in rad/s. The RAAN drift metric converts it to deg/day.
 
 **J2 secular argument of perigee rate**
 
@@ -357,11 +378,17 @@ $$
 \frac{d\omega}{dt} = \frac{3}{4}\, n\, J_2 \left(\frac{R_e}{p}\right)^2 \left(5\cos^2 i - 1\right)
 $$
 
+Same units as the RAAN rate.
+
 **Sun direction**
 
-Astronomical Almanac low-precision formula, accurate to about $0.01^\circ$ for 1950–2050.
+$\hat{s}$ comes from the Astronomical Almanac low-precision Sun formula, accurate to about $0.01^\circ$ for 1950–2050.
 
 **Beta angle**
+
+$$
+\hat{h} = (\sin\Omega\sin i,\; -\cos\Omega\sin i,\; \cos i)
+$$
 
 $$
 \beta = \arcsin(\hat{h} \cdot \hat{s})
@@ -375,12 +402,12 @@ $$
 f = \frac{1}{\pi}\arccos\left(\frac{\sqrt{a^2 - R_e^2}}{a\cos\beta}\right)
 $$
 
-Eccentric orbits are propagated numerically with Kepler's equation.
+$f = 0$ when $|\beta|$ is large enough that the orbit misses the shadow cylinder. Eccentric orbits are propagated numerically with Kepler's equation.
 
 **Sun-synchronous condition**
 
 $$
-\frac{d\Omega}{dt} = \frac{360^\circ}{\text{sidereal year}} \approx 0.9856^\circ/\text{day}
+\frac{d\Omega}{dt} = \frac{360^\circ}{365.256363004\,\mathrm{day}} \approx 0.9856^\circ/\mathrm{day}
 $$
         """
     )
