@@ -183,10 +183,10 @@ def test_seasonal_planes_are_the_equinoxes_and_solstices():
     picks = seasonal_plane_picks(sweep)
     labels = [label for _k, label, _color in picks]
     assert labels == [
-        "March equinox",
-        "June solstice",
-        "September equinox",
-        "December solstice",
+        "Vernal equinox",
+        "Summer solstice",
+        "Autumnal equinox",
+        "Winter solstice",
     ]
     dates = [sweep.dates[k] for k, _label, _color in picks]
     assert dates == [

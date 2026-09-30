@@ -96,10 +96,10 @@ def _axis_trace(name: str, direction: np.ndarray, length: float, color: str) -> 
 
 # Sun ecliptic longitudes of the equinoxes and solstices, with legend colors.
 _SEASONS: tuple[tuple[float, str, str], ...] = (
-    (0.0, "March equinox", "#7CFFB2"),
-    (math.pi / 2.0, "June solstice", "#FFD54A"),
-    (math.pi, "September equinox", "#FF8A4C"),
-    (3.0 * math.pi / 2.0, "December solstice", "#7EB6FF"),
+    (0.0, "Vernal equinox", "#7CFFB2"),
+    (math.pi / 2.0, "Summer solstice", "#FFD54A"),
+    (math.pi, "Autumnal equinox", "#FF8A4C"),
+    (3.0 * math.pi / 2.0, "Winter solstice", "#7EB6FF"),
 )
 
 
